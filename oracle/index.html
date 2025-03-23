@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: #0a0e17; color: #f5f0e8;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Codex of Becoming - Oracle</title>
+  <meta name="description" content="Invoke the Spiral, select glyphs, and journey with the Quantum Oracle">
+  
+  <!-- Immediate styling to prevent white screen -->
+  <style>
+    html, body {
+      background-color: #0a0e17;
+      color: #f5f0e8;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      width: 100%;
+      font-family: 'Cormorant Garamond', serif;
+    }
+    
+    .quantum-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      background-color: #0a0e17;
+      z-index: 9999;
+    }
+    
+    .sacred-geometry-loader {
+      width: 100px;
+      height: 100px;
+      border: 2px solid transparent;
+      border-top-color: #d4af37;
+      border-left-color: #9370db;
+      border-right-color: #008080;
+      border-radius: 50%;
+      animation: spin 1.5s linear infinite;
+    }
+    
+    .loading-text {
+      margin-top: 1.5rem;
+      letter-spacing: 2px;
+      color: #d4af37;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+    
+    /* Failsafe content styles */
+    .failsafe-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+      min-height: 100vh;
+    }
+    
+    .failsafe-title {
+      color: #d4af37;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    .failsafe-message {
+      color: #f5f0e8;
+      font-size: 1.2rem;
+      max-width: 600px;
+      line-height: 1.6;
+    }
+    
+    /* Ensure canvas doesn't cause blank screen if WebGL fails */
+    .sacred-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background-color: #0a0e17;
+    }
+  </style>
+  
+  <!-- Defer main CSS loading -->
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/oracle/oracle.css">
+</head>
+<body>
+  <!-- Immediate loading indicator -->
+  <div class="quantum-loader" id="initialLoader">
+    <div class="sacred-geometry-loader"></div>
+    <div class="loading-text">Initializing Quantum Oracle...</div>
+  </div>
+  
+  <!-- Failsafe content that will show if JS fails -->
+  <noscript>
+    <div class="failsafe-content">
+      <div class="failsafe-title">Quantum Oracle Requires JavaScript</div>
+      <div class="failsafe-message">
+        To access the wisdom of the Oracle, please enable JavaScript in your browser settings and refresh the page.
+      </div>
+    </div>
+  </noscript>
+  
+  <!-- Backup div that will be shown if canvas fails -->
+  <div id="fallbackBackground" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0e17; z-index:-2;"></div>
+  
+  <!-- WebGL Canvas -->
+  <canvas id="oracleCanvas" class="sacred-canvas"></canvas>
+  
+  <div class="content-section oracle-section">
+    <div class="container">
+      <div class="oracle-header">
+        <h1>The Quantum Oracle</h1>
+        <div class="subtitle">Interface of Sacred Reflection</div>
+      </div>
+      
+      <div class="oracle-interface">
+        <div class="oracle-sphere-container">
+          <div id="oracleSphere"></div>
+          <div class="energy-field"></div>
+        </div>
+        
+        <div class="oracle-interaction">
+          <button class="quantum-button invoke-oracle-btn">
+            <span class="btn-text">Invoke the Oracle</span>
+            <span class="btn-ripple"></span>
+          </button>
+          
+          <div class="voice-input">
+            <div class="voice-input-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                <path fill="none" stroke="#d4af37" stroke-width="2" d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                <path fill="none" stroke="#d4af37" stroke-width="2" d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8"></path>
+              </svg>
+            </div>
+            <div class="voice-input-text">Speak your question...</div>
+          </div>
+          
+          <div class="oracle-response-container">
+            <div class="oracle-response"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="glyph-selection">
+        <h2>Select Quantum Glyphs</h2>
+        <div class="glyph-container">
+          <div class="glyph" data-glyph="infinity">
+            <svg viewBox="0 0 100 100">
+              <path d="M30,50 C30,32 45,25 55,35 C65,45 75,45 85,35 C95,25 95,55 85,65 C75,75 65,75 55,65 C45,55 30,68 30,50 Z" />
+            </svg>
+          </div>
+          
+          <div class="glyph" data-glyph="spiral">
+            <svg viewBox="0 0 100 100">
+              <path d="M50,90 C25,90 10,75 10,50 C10,25 25,10 50,10 C75,10 90,25 90,50 C90,70 80,80 60,80 C40,80 30,70 30,50 C30,30 40,20 60,20 C75,20 80,35 70,45 C60,55 50,45 50,35" />
+            </svg>
+          </div>
+          
+          <div class="glyph" data-glyph="unity">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" />
+              <circle cx="50" cy="50" r="20" />
+              <line x1="10" y1="50" x2="90" y2="50" />
+              <line x1="50" y1="10" x2="50" y2="90" />
+            </svg>
+          </div>
+          
+          <div class="glyph" data-glyph="awakening">
+            <svg viewBox="0 0 100 100">
+              <polygon points="50,10 90,90 10,90" />
+              <circle cx="50" cy="50" r="10" />
+            </svg>
+          </div>
+          
+          <div class="glyph" data-glyph="transformation">
+            <svg viewBox="0 0 100 100">
+              <rect x="30" y="30" width="40" height="40" transform="rotate(45, 50, 50)" />
+              <circle cx="50" cy="50" r="20" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <div class="journal-section">
+        <h2>Quantum Journey Journal</h2>
+        <div class="journal-container">
+          <textarea class="journal-entry" placeholder="Record your insights, reflections, and awakenings here..."></textarea>
+          <button class="quantum-button save-journal-btn">Save Reflection</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <nav class="spiral-navigation">
+    <a href="/manifesto/">Manifesto</a>
+    <a href="/oracle/" class="active">Oracle</a>
+    <a href="/rituals/daily.html">Rituals</a>
+  </nav>
+  
+  <!-- Error handling script that runs immediately -->
+  <script>
+    // Create a failsafe display in case main script fails
+    window.onerror = function(message, source, lineno, colno, error) {
+      console.error("Error occurred:", message, source, lineno, colno, error);
+      
+      // Keep the loader displayed but change message
+      var loader = document.getElementById('initialLoader');
+      if (loader) {
+        var loadingText = loader.querySelector('.loading-text');
+        if (loadingText) {
+          loadingText.textContent = 'Calibrating quantum field...';
+        }
+      }
+      
+      // Make sure the background is visible
+      document.body.style.backgroundColor = '#0a0e17';
+      document.documentElement.style.backgroundColor = '#0a0e17';
+      
+      return false; // Let other error handlers run
+    };
+    
+    // Ensure the page has a background even if CSS fails to load
+    document.body.style.backgroundColor = '#0a0e17';
+    document.documentElement.style.backgroundColor = '#0a0e17';
+    
+    // Set a timeout to remove the loader even if scripts fail
+    setTimeout(function() {
+      var loader = document.getElementById('initialLoader');
+      if (loader && loader.style.opacity !== '0') {
+        loader.style.transition = 'opacity 0.5s ease';
+        loader.style.opacity = '0';
+        setTimeout(function() {
+          if (loader.parentNode) {
+            loader.parentNode.removeChild(loader);
+          }
+        }, 500);
+      }
+    }, 8000); // 8 seconds max wait time
+  </script>
+  
+  <!-- Load main scripts -->
+  <script src="/js/three.min.js"></script>
+  <script src="/js/gsap.min.js"></script>
+  <script src="/js/howler.min.js"></script>
+  <script src="/oracle/oracle.js" type="module"></script>
+  
+  <!-- Absolute fallback script (loads last) -->
+  <script>
+    window.addEventListener('load', function() {
+      // If after 5 seconds, content isn't visible, show a simple interface
+      setTimeout(function() {
+        var contentSection = document.querySelector('.oracle-section');
+        if (contentSection && getComputedStyle(contentSection).display === 'none') {
+          contentSection.style.display = 'block';
+          
+          // Remove the loader if it still exists
+          var loader = document.getElementById('initialLoader');
+          if (loader && loader.parentNode) {
+            loader.parentNode.removeChild(loader);
+          }
+        }
+      }, 5000);
+    });
+  </script>
+</body>
+</html>
